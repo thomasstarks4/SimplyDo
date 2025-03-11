@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single File To-Do List</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #2c3e50, #34495e);
+            font-family: Arial, sans-serif;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .app-container {
+            background: #2c3e50;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .center {
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+            margin: 0 0 20px;
+        }
+        input[type="text"] {
+            width: calc(100% - 130px);
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 1rem;
+            color: #2c3e50;
+            background: #ecf0f1;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #1abc9c;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+		
+        .add-button:hover {
+            background: #16a085;
+            transform: scale(1.05);
+        }
+        .add-button:active {
+            background: #1abc9c;
+            transform: scale(0.95);
+        }
+		.clear-button{
+		background: #1b2049;
+		}
+		.clear-button:hover{
+		background: red;
+		transform: scale(1.05);
+		}
+		.d-flex {
+			display: flex;
+			flex-direction: row;
+		}
+        .list-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .list-container div {
+            background: #34495e;
+            border: 1px solid #2c3e50;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+        .list-container input[type="checkbox"] {
+            margin-right: 10px;
+        }
+		.m-1 {
+			margin: 1%;
+		}
+        .no-link {
+            text-decoration: none;
+            color: #1abc9c;
+        }
+        .no-link:hover {
+            color: #16a085;
+            font-size: 1.2rem;
+        }
+        .save-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .save-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        .save-button:active {
+            background: #3498db;
+            transform: scale(0.95);
+        }
+		.task-input {
+		margin: 1%;
+		}
+    </style>
+</head>
+<body>
+    <div class="app-container center">
+        <h1>Welcome to SimplyDo!</h1>
+        <p>In this single file, you have your own to-do list application. Add tasks, check them off, and keep track of your progress. If you find this useful, please check out my fitness tracker site: <a class="no-link" href="http://www.myrepbro.com" target="_blank">MyRepBro</a></p>
+        <form>
+			<div class="d-flex">
+				<input class="task-input" id="taskInput" placeholder="What's next on your list?" type="text" />
+				<button type="button" class="add-button m-1" type="button" onclick="onAddClick();">Add to list!</button>
+			</div>
+			<button type="button" class="save-button" onclick="saveToFile();">Save List</button>
+			<button type="button" class="clear-button" onclick="clearList();">Clear List</button>
+        </form>
+        <div class="list-container" id="masterList"></div>
+        
+    </div>
+
+    <script type="text/javascript">
+        function onAddClick() {
+            let taskInput = document.getElementById("taskInput");
+            let newListItemText = taskInput.value.trim();
+
+            if (newListItemText === "") {
+                alert("You haven't entered anything yet.");
+                return;
+            }
+
+            let newListItem = document.createElement("div");
+            newListItem.innerHTML = `<input type="checkbox" /> ${newListItemText}`;
+            
+            document.getElementById("masterList").appendChild(newListItem);
+            taskInput.value = "";
+        }
+
+        function saveToFile() {
+            let tasks = Array.from(document.querySelectorAll("#masterList div"))
+                .map(div => div.textContent.trim())
+                .join('\n');
+
+            if (tasks === "") {
+                alert("No tasks to save.");
+                return;
+            }
+
+            let blob = new Blob([tasks], { type: "text/plain;charset=utf-8" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "todo_list.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+		
+		function clearList() {
+			if (document.getElementById("masterList").innerHTML === "")
+				{
+					alert("The list is already empty!");
+				}
+			else { 
+				if(confirm("Are you sure you want to clear the list? This action cannot be undone.")) {
+					document.getElementById("masterList").innerHTML = "";
+					alert("Time to start fresh! :)");
+				}
+			}
+		}
+		document.getElementById('taskInput').addEventListener('keydown', function(event) {
+		  if (event.key === 'Enter') {
+			event.preventDefault(); 
+			onAddClick();
+		  }
+		});
+
+    </script>
+</body>
+</html>
